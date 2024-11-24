@@ -30,4 +30,9 @@ public class DistanceController {
                                      @RequestParam String mode) {
         return distanceService.getTrafficSeverity(origin, destination, departure_time, mode);
     }
+    
+    @GetMapping("/map")
+    public String getMapPage() {
+        return "map"; // This will serve the HTML page from resources/templates
+    }
 }
