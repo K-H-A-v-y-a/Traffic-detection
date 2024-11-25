@@ -16,12 +16,14 @@ public class DistanceService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    // Get distance between two locations
     public String getDistance(String origin, String destination) {
         String url = String.format("%s?origins=%s&destinations=%s&key=%s",
                 apiUrl, origin, destination, apiKey);
         return restTemplate.getForObject(url, String.class);
     }
     
+    // Get traffic severity with the provided origin, destination, departure time, and mode of transport
     public String getTrafficSeverity(String origin, String destination, String departure_time, String mode) {
         // Construct the URL with the provided parameters
         String url = String.format("%s?origins=%s&destinations=%s&departure_time=%s&mode=%s&key=%s",
@@ -34,11 +36,13 @@ public class DistanceService {
     }
     
 
+    // Inference of traffic severity based on the API response
     private String inferTrafficSeverity(String response) {
         try {
             JSONObject jsonResponse = new JSONObject(response);
 
             if (jsonResponse.getString("status").equals("OK")) {
+                // Extract the relevant data from the response
                 JSONObject element = jsonResponse.getJSONArray("rows")
                         .getJSONObject(0)
                         .getJSONArray("elements")
@@ -81,7 +85,7 @@ public class DistanceService {
                 // Convert distance to kilometers
                 double distanceInKm = distanceValue / 1000.0;
 
-                // Build response JSON
+                // Build response JSON with all the necessary details
                 JSONObject responseObj = new JSONObject();
                 responseObj.put("origin", jsonResponse.getJSONArray("origin_addresses").getString(0));
                 responseObj.put("destination", jsonResponse.getJSONArray("destination_addresses").getString(0));
@@ -98,6 +102,4 @@ public class DistanceService {
             return "Error parsing response: " + e.getMessage();
         }
     }
-
-
 }
